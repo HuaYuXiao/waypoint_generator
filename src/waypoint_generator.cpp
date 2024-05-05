@@ -6,11 +6,11 @@
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Path.h>
-#include "sample_waypoints.h"
 #include <vector>
 #include <deque>
 #include <boost/format.hpp>
 #include <eigen3/Eigen/Dense>
+#include <tf/tf.h>
 
 using namespace std;
 using bfmt = boost::format;
@@ -155,21 +155,7 @@ void goal_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
     ros::NodeHandle n("~");
     n.param("waypoint_type", waypoint_type, string("manual"));
     
-    if (waypoint_type == string("circle")) {
-        waypoints = circle();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("eight")) {
-        waypoints = eight();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("points")) {
-        waypoints = point();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("series")) {
-        load_waypoints(n, trigged_time);
-    } else if (waypoint_type == string("manual-lonely-waypoint")) {
+    if (waypoint_type == string("manual-lonely-waypoint")) {
         if (msg->pose.position.z > -0.1) {
             // if height > 0, it's a valid goal;
             geometry_msgs::PoseStamped pt = *msg;
@@ -220,25 +206,6 @@ void traj_start_trigger_callback(const geometry_msgs::PoseStamped& msg) {
     n.param("waypoint_type", waypoint_type, string("manual"));
 
     ROS_ERROR_STREAM("Pattern " << waypoint_type << " generated!");
-    if (waypoint_type == string("free")) {
-        waypoints = point();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("circle")) {
-        waypoints = circle();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("eight")) {
-        waypoints = eight();
-        publish_waypoints_vis();
-        publish_waypoints();
-   } else if (waypoint_type == string("point")) {
-        waypoints = point();
-        publish_waypoints_vis();
-        publish_waypoints();
-    } else if (waypoint_type == string("series")) {
-        load_waypoints(n, trigged_time);
-    }
 }
 
 int main(int argc, char** argv) {

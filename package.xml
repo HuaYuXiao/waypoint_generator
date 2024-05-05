@@ -1,12 +1,10 @@
 <package>
-  <version>0.0.0</version>
+  <version>1.0.1</version>
   <name>waypoint_generator</name>
   <description>
-
      waypoint_generator
-
   </description>
-  <maintainer email="eeshaojie@todo.todo">Shaojie Shen</maintainer>
+  <maintainer email="hyx020222@gmail.com">Eason Hua</maintainer>
   <license>BSD</license>
   <url>http://ros.org/wiki/waypoint_generator</url>
 
@@ -19,7 +17,4 @@
   <run_depend>roscpp</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>nav_msgs</run_depend>
-
 </package>
-
-
