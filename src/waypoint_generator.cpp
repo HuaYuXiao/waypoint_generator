@@ -18,7 +18,7 @@ using bfmt = boost::format;
 ros::Publisher pub1;
 ros::Publisher pub2;
 ros::Publisher pub3;
-string waypoint_type = string("manual");
+string waypoint_type = string("manual-lonely-waypoint");
 bool is_odom_ready;
 nav_msgs::Odometry odom;
 nav_msgs::Path waypoints;
@@ -151,9 +151,6 @@ void goal_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
 
     trigged_time = ros::Time::now(); //odom.header.stamp;
     //ROS_ASSERT(trigged_time > ros::Time(0));
-
-    ros::NodeHandle n("~");
-    n.param("waypoint_type", waypoint_type, string("manual"));
     
     if (waypoint_type == string("manual-lonely-waypoint")) {
         if (msg->pose.position.z > -0.1) {
@@ -202,21 +199,20 @@ void traj_start_trigger_callback(const geometry_msgs::PoseStamped& msg) {
     trigged_time = odom.header.stamp;
     ROS_ASSERT(trigged_time > ros::Time(0));
 
-    ros::NodeHandle n("~");
-    n.param("waypoint_type", waypoint_type, string("manual"));
-
     ROS_ERROR_STREAM("Pattern " << waypoint_type << " generated!");
 }
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "waypoint_generator");
     ros::NodeHandle n("~");
-    n.param("waypoint_type", waypoint_type, string("manual"));
-    ros::Subscriber sub1 = n.subscribe("odom", 10, odom_callback);
-    ros::Subscriber sub2 = n.subscribe("goal", 10, goal_callback);
-    ros::Subscriber sub3 = n.subscribe("traj_start_trigger", 10, traj_start_trigger_callback);
-    pub1 = n.advertise<nav_msgs::Path>("waypoints", 50);
-    pub2 = n.advertise<geometry_msgs::PoseArray>("waypoints_vis", 10);
+
+    n.param("waypoint_type", waypoint_type, string("manual-lonely-waypoint"));
+
+    ros::Subscriber sub1 = n.subscribe("/prometheus/drone_odom", 10, odom_callback);
+    ros::Subscriber sub2 = n.subscribe("/prometheus/planning/goal", 10, goal_callback);
+    ros::Subscriber sub3 = n.subscribe("/traj_start_trigger", 10, traj_start_trigger_callback);
+    pub1 = n.advertise<nav_msgs::Path>("/waypoint_generator/waypoints", 50);
+    pub2 = n.advertise<geometry_msgs::PoseArray>("/waypoints_vis", 10);
 
     trigged_time = ros::Time(0);
 
